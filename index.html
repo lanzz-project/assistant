@@ -1,13 +1,39 @@
 <!doctype html>
 <html lang="id">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
-<meta name="theme-color" content="#050711">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="description" content="Lanzz.Ai — asisten AI yang sudah dapat digunakan dan terus dikembangkan oleh Lanzz Project.">
-<title>Lanzz.Ai — AI Assistant</title>
-<style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+    <meta name="theme-color" content="#050711">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <title>Lanzz Ai - Asisten AI Online Gratis & Terbaik</title>
+    
+    <meta name="description" content="Lanzz Ai adalah asisten AI online gratis yang siap membantu Anda. Gunakan Assistant Ai dari Lanzz Project untuk berbagai kebutuhan secara cerdas dan cepat.">
+
+    <meta name="keywords" content="Lanzz Ai, Ai Online, Ai Gratis, Assistant Ai, Lanzz Project, Asisten AI, AI Indonesia">
+    <meta name="author" content="Lanzz Project">
+    
+    <link rel="canonical" href="https://lanzz-project.github.io/">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://lanzz-project.github.io/">
+    <meta property="og:title" content="Lanzz Ai - Asisten AI Online Gratis & Terbaik">
+    <meta property="og:description" content="Lanzz Ai adalah asisten AI online gratis yang siap membantu Anda. Gunakan Assistant Ai dari Lanzz Project untuk berbagai kebutuhan secara cerdas dan cepat.">
+    <meta property="og:image" content="https://lanzz-project.github.io/logo/android-chrome-512x512.png">
+
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://lanzz-project.github.io/">
+    <meta property="twitter:title" content="Lanzz Ai - Asisten AI Online Gratis & Terbaik">
+    <meta property="twitter:description" content="Lanzz Ai adalah asisten AI online gratis yang siap membantu Anda. Gunakan Assistant Ai dari Lanzz Project untuk berbagai kebutuhan secara cerdas dan cepat.">
+    <meta property="twitter:image" content="https://lanzz-project.github.io/logo/android-chrome-512x512.png">
+
+    <link rel="icon" type="image/x-icon" href="logo/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="logo/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="logo/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="logo/apple-touch-icon.png">
+    
+    <style>
 :root{
  --bg:#050711;--bg2:#090d1a;--panel:rgba(12,17,31,.78);--panel2:#10182b;
  --line:rgba(151,169,207,.14);--text:#f7f9ff;--muted:#8e9bb5;
@@ -246,7 +272,6 @@ textarea{display:block;width:100%;min-height:46px;max-height:150px;resize:none;b
  textarea{min-height:42px;font-size:13px}
  .tool{width:34px;height:34px}
  
- /* FIX: Mencegah bug layar blur/hitam di WebView Android saat sidebar dibuka */
  .sidebar.mobile-open{
    position:fixed !important;
    top:0;left:0;width:78vw;max-width:320px;height:100dvh;
@@ -265,7 +290,6 @@ textarea{display:block;width:100%;min-height:46px;max-height:150px;resize:none;b
  .feature{min-height:auto}
  .dev-card{font-size:10px}
 }
-/* --- viewport / responsive stability fixes --- */
 html, body { width:100%; min-width:0; height:100%; min-height:100%; overflow:hidden; }
 .app, .sidebar, .main { height:100vh; height:100dvh; }
 .main { min-height:0; }
@@ -306,7 +330,6 @@ html, body { width:100%; min-width:0; height:100%; min-height:100%; overflow:hid
   .feature-grid { grid-template-columns:1fr; }
 }
 
-/* Keep the mobile controls clickable on older Android WebViews. */
 .mobile-menu, .top-btn.home-btn { position:relative !important; z-index:999 !important; pointer-events:auto !important; touch-action:manipulation !important; cursor:pointer !important; }
 .mobile-menu { display:grid !important; place-items:center !important; width:38px !important; height:38px !important; padding:0 !important; opacity:1 !important; visibility:visible !important; }
 .mobile-menu svg { width:20px !important; height:20px !important; }
@@ -322,7 +345,6 @@ html, body { width:100%; min-width:0; height:100%; min-height:100%; overflow:hid
 
 .media-tools{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.media-tools .tool{font-size:10px;width:auto;padding:0 10px}.editor-preview{width:100%;max-height:48vh;object-fit:contain;background:#080d18;border-radius:12px}.editor-controls{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:10px}.editor-controls label{font-size:10px;color:#8c9bb5}.editor-controls input{width:100%}.editor-actions{display:flex;gap:8px;margin-top:12px}.editor-actions button{flex:1}.range-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}.result-preview{max-width:100%;max-height:45vh;border-radius:12px;margin-top:10px}.edit-badge{font-size:9px;color:#aebcff}
 
-/* ================= UPGRADE LAYER ================= */
 .ico{width:18px;height:18px;display:block;flex:none}
 .ico-sm{width:14px;height:14px;display:block;flex:none}
 .ico-lg{width:22px;height:22px;display:block;flex:none}
@@ -699,9 +721,6 @@ html, body { width:100%; min-width:0; height:100%; min-height:100%; overflow:hid
 
 <script>
 'use strict';
-/* ============================================================
-   Lanzz.Ai — UPGRADE BUILD (Tanpa Ganti Tema, Tanpa Lipat Sidebar)
-   ============================================================ */
 const DB_NAME='Lanzz.AiDB_V4',STORE='conversations';
 const LS_NAME='lanzz_name', LS_PINNED='lanzz_pinned_'+DB_NAME;
 
@@ -724,7 +743,6 @@ const $$=s=>Array.from(document.querySelectorAll(s));
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
 const openSocial=url=>window.open(url,'_blank','noopener,noreferrer');
 
-/* ---------------- ICONS ---------------- */
 const ICONS={
   copy:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>',
   check:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>',
@@ -744,7 +762,6 @@ const ICONS={
   broom:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3l7 7"/><path d="M11 6l7 7"/><path d="M4 20l7-7"/><path d="M4 20h6"/></svg>'
 };
 
-/* ---------------- UTIL ---------------- */
 function formatBytes(bytes){
   if(!Number.isFinite(bytes)) return '';
   if(bytes<1024) return bytes+' B';
@@ -790,7 +807,6 @@ function uid(){
   return 'chat_'+Date.now()+'_'+Math.random().toString(36).slice(2,8);
 }
 
-/* ---------------- DB ---------------- */
 function db(){
   return new Promise((resolve,reject)=>{
     const r=indexedDB.open(DB_NAME,1);
@@ -855,7 +871,6 @@ function togglePin(id){
   renderList($('#search')?$('#search').value:'');
 }
 
-/* ---------------- SIDEBAR LIST ---------------- */
 async function renderList(filter){
   filter = filter || '';
   const list=$('#chatList'); if(!list) return;
@@ -903,7 +918,6 @@ async function renderList(filter){
   });
 }
 
-/* ---------------- CONTEXT MENU ---------------- */
 function closeCtxMenu(){ const m=$('#ctxMenu'); if(m) m.classList.remove('open'); }
 function openChatMenu(ev,id){
   const menu=$('#ctxMenu'); if(!menu) return;
@@ -962,7 +976,6 @@ function openChatMenu(ev,id){
 }
 document.addEventListener('click',e=>{ if(!e.target.closest('#ctxMenu') && !e.target.closest('[data-menu]')) closeCtxMenu(); });
 
-/* ---------------- MESSAGES ---------------- */
 function clearMessages(){
   const m=$('#messages'); if(m) m.innerHTML='';
 }
@@ -1156,7 +1169,6 @@ async function regenerateFrom(msgId){
   await runAI(userText,[]);
 }
 
-/* ---------------- CHAT FLOW ---------------- */
 async function newChat(){
   current={
     id:uid(),
@@ -1374,7 +1386,6 @@ async function sendMessage(){
   files.forEach(a=>{ if(a.url) URL.revokeObjectURL(a.url); });
 }
 
-/* ---------------- VOICE ---------------- */
 function updateVoiceButton(){
   const b=$('#voice');
   if(!b)return;
@@ -1440,7 +1451,6 @@ async function startVoice(){
   }
 }
 
-/* ---------------- MEDIA EDITOR ---------------- */
 function openMediaModal(){ const m=$('#mediaModal'); if(m) m.classList.add('open'); }
 function closeMediaModal(){ const m=$('#mediaModal'); if(m) m.classList.remove('open'); editorIndex=-1; editorImage=null; editorVideo=null; }
 function openMediaEditor(index){
@@ -1571,7 +1581,6 @@ async function applyAIImageEdit(){
   finally{btn.disabled=false;btn.textContent='Edit dengan AI';}
 }
 
-/* ---------------- NAVIGATION / UI ---------------- */
 function goHome(){
   current=null;
   $('#messages').innerHTML='';
@@ -1616,7 +1625,6 @@ function safeBind(selector,event,fn){
   if(el)el.addEventListener(event,fn);
 }
 
-/* ---------------- EXPORT ---------------- */
 function downloadBlob(content,name,type){
   const blob=new Blob([content],{type:type||'application/json'});
   const url=URL.createObjectURL(blob);
@@ -1642,7 +1650,6 @@ function exportChats(list,filename){
   toast('Export selesai','ok');
 }
 
-/* ---------------- STATS ---------------- */
 async function openStats(){
   const modal=$('#statsModal'); if(!modal) return;
   modal.classList.add('open');
@@ -1673,7 +1680,6 @@ async function openStats(){
   }
 }
 
-/* ---------------- COMMAND PALETTE ---------------- */
 function buildCommands(){
   const cmds=[
     {id:'new',label:'Buat chat baru',hint:'Ctrl+Shift+O',icon:ICONS.plus,run:()=>{newChat();}},
@@ -1747,7 +1753,6 @@ function runCmdIndex(idx){
   try{ c.run(); }catch(e){ console.error(e); toast('Perintah gagal dijalankan','err'); }
 }
 
-/* ---------------- LIGHTBOX / ZOOM ---------------- */
 function bindZoom(scope){
   if(!scope)return;
   scope.querySelectorAll('[data-zoom]').forEach(img=>{
@@ -1769,7 +1774,6 @@ function closeLightbox(){
   const body=$('#lightboxBody'); if(body)body.innerHTML='';
 }
 
-/* ---------------- MISC UI ---------------- */
 function updateCharCount(){
   const el=$('#charCount'); const i=$('#input');
   if(!el||!i)return;
@@ -1783,7 +1787,6 @@ function autoGrowInput(){
   i.style.height=Math.min(i.scrollHeight,150)+'px';
 }
 
-/* ---------------- EVENT BINDING ---------------- */
 safeBind('#home','click',e=>{e.preventDefault();goHome()});
 safeBind('#mobileMenu','click',e=>{
   e.preventDefault();
@@ -1856,7 +1859,6 @@ safeBind('#aiEditApply','click',applyAIAIImageEdit);
 safeBind('#lightboxClose','click',closeLightbox);
 safeBind('#lightbox','click',e=>{if(e.target.id==='lightbox')closeLightbox()});
 
-/* Command palette */
 safeBind('#cmdBtn','click',openCmd);
 safeBind('#cmdModal','click',e=>{if(e.target.id==='cmdModal')closeCmd()});
 safeBind('#cmdInput','input',e=>renderCmdResults(e.target.value));
@@ -1867,7 +1869,6 @@ safeBind('#cmdInput','keydown',e=>{
   else if(e.key==='Escape'){closeCmd();}
 });
 
-/* Quick prompts */
 safeBind('#quickPrompts','click',e=>{
   const chip=e.target.closest('.qchip'); if(!chip)return;
   const i=$('#input'); if(!i)return;
@@ -1876,7 +1877,6 @@ safeBind('#quickPrompts','click',e=>{
   toast('Prompt siap — tekan kirim');
 });
 
-/* Scroll button */
 safeBind('#scrollBottom','click',()=>scrollDown(true));
 safeBind('#content','scroll',()=>{
   const c=$('#content'), b=$('#scrollBottom');
@@ -1885,7 +1885,6 @@ safeBind('#content','scroll',()=>{
   b.classList.toggle('show',!near);
 });
 
-/* Global keyboard shortcuts */
 document.addEventListener('keydown',e=>{
   const tag=(e.target&&e.target.tagName)||'';
   const typing = tag==='INPUT'||tag==='TEXTAREA'||e.target.isContentEditable;
@@ -1910,7 +1909,6 @@ document.addEventListener('keydown',e=>{
   }
 });
 
-/* Drag & drop + paste */
 (function setupDropZone(){
   const veil=$('#dropVeil');
   let dragDepth=0;
@@ -1958,10 +1956,8 @@ document.addEventListener('paste',async e=>{
   }
 });
 
-/* Resize */
 window.addEventListener('resize',()=>{ if(innerWidth>760) setMobileMenu(false); });
 
-/* ---------------- PARTICLE BACKGROUND ---------------- */
 (function initParticles(){
   const c=document.getElementById('particleCanvas');
   if(!c)return;
@@ -2030,7 +2026,6 @@ window.addEventListener('resize',()=>{ if(innerWidth>760) setMobileMenu(false); 
   });
 })();
 
-/* ---------------- INIT ---------------- */
 (async()=>{
   try{
     updateCharCount();
