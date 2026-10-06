@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="utf-8">
@@ -1739,7 +1739,11 @@ async function runAI(text,files,replyCtx){
       messageToSend='(Membalas pesan sebelumnya: "'+String(replyCtx.content||'').slice(0,240)+'")\n\n'+messageToSend;
     }
     form.append('message',messageToSend);
-    form.append('history',JSON.stringify(current.messages.slice(-20).map(m=>({role:m.role,content:m.content}))));
+    // ✅ FIX UTAMA: Mapping role 'ai' menjadi 'assistant' agar history dibaca backend
+    form.append('history', JSON.stringify(current.messages.slice(-20).map(m => ({
+      role: m.role === 'ai' ? 'assistant' : 'user',
+      content: m.content
+    }))));
     for(const a of files){
       let blob=a._file;
       if(!blob && a.url){ blob=await fetch(a.url).then(r=>r.blob()); }
@@ -2579,5 +2583,6 @@ window.addEventListener('resize',()=>{ if(innerWidth>760) setMobileMenu(false); 
   }
 })();
 </script>
+
 </body>
 </html>
