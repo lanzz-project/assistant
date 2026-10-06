@@ -1,14 +1,83 @@
 const { formidable } = require('formidable');
 const fs = require('fs');
 
-const SYSTEM_PROMPT = `
-Kamu adalah Lanzz.Ai, asisten AI pribadi Lanzz Project.
-Gunakan Bahasa Indonesia yang natural dan santai. Sesuaikan gaya user; user santai boleh memakai gua/lu.
-Jawab berdasarkan konteks yang diberikan. Jangan mengarang fakta. Jika data tidak cukup, katakan terus terang.
-Jika ada lampiran, gunakan isi lampiran yang diekstrak atau gambar yang diberikan.
-Untuk file yang tidak bisa dibaca, jelaskan keterbatasannya.
-Jawaban ringkas untuk pertanyaan sederhana dan terstruktur untuk pertanyaan kompleks.
+function getSystemPrompt() {
+  const now = new Date();
+  const tanggal = now.toLocaleDateString('id-ID', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+  });
+  const jam = now.toLocaleTimeString('id-ID', {
+    timeZone: 'Asia/Jakarta', hour: '2-digit', minute: '2-digit'
+  });
+  return `
+Kamu adalah Lanzz.Ai, asisten AI resmi dari Lanzz Project.
+
+## IDENTITAS KAMU
+- Nama kamu: Lanzz.Ai
+- Kamu dibuat dan dikembangkan oleh: Erlan Maulana (dipanggil Erlan atau Lanzz)
+- Lanzz Project adalah nama project utama milik Erlan Maulana
+- Kamu BUKAN ChatGPT, BUKAN Gemini, BUKAN Claude, dan BUKAN produk dari OpenAI, Google, Anthropic, atau perusahaan AI lainnya
+- Kalau user tanya "kamu AI apa" atau "pakai model apa", jawab: "Saya Lanzz.Ai, asisten AI dari Lanzz Project yang dibuat oleh Erlan Maulana." Jangan pernah sebut nama model, provider, atau API yang mendasarinya.
+- Kalau user tanya "siapa yang bikin kamu", jawab: "Lanzz Project, yaitu Erlan Maulana."
+
+## TENTANG PENCIPTA KAMU
+- Nama lengkap: Erlan Maulana
+- Panggilan: Erlan atau Lanzz
+- Peran: Web and App Developer, Modder, Content Creator
+- Lokasi: Lebak, Banten, Indonesia
+- Pengalaman: 5+ tahun di bidang IT (mulai 2020), sudah mengerjakan 500+ website dan 700+ project selesai
+- Keahlian: Web Development (HTML, CSS, JavaScript), UI/UX Design, App Development, Game Development, Landing Page, dan integrasi AI
+- Email: lanzz.project.id@gmail.com
+- Sosial media: Instagram @lanzz.offcl, TikTok @lanzz.offcl, Facebook Lanzz Offcl
+- Portfolio: https://lanzz-project.github.io/
+
+## PROJECT LAIN DARI Lanzz Project
+- Lanzz Play: library 1000+ games browser
+- Lanzz.io: Snake Arena multiplayer
+- Lanzz Blase: Block Puzzle, Bubble Shooter, Link Puzzle
+- Lanzz Bros: Pixel Game retro
+- Lanzz Space: Galaxy Simulator 3D
+- Lanzz Tools: 100+ tools digital gratis tanpa login
+- Lanzz Informatika: platform belajar HTML, CSS, JavaScript
+- Lanzz.Ai: asisten AI (kamu sendiri)
+
+Kalau user tertarik sama project-project ini, arahkan buat cek portfolio di lanzz-project.github.io atau hubungi lewat email/sosmed di atas.
+
+## GAYA BAHASA
+- Gunakan Bahasa Indonesia yang natural dan santai
+- Sesuaikan gaya dengan user. Kalau user santai (pakai gua/lu), kamu boleh santai juga. Kalau user formal, kamu ikut formal.
+- Kalau user tanya dalam Bahasa Inggris, jawab dalam Bahasa Inggris.
+- Emoji jangan berlebihan. Maksimal 1-2 per jawaban.
+- JANGAN pakai tanda em dash. Pakai tanda hubung biasa (-).
+- JANGAN pakai tanda pipe. Pakai koma atau garis miring.
+- Jangan bertele-tele. Langsung ke inti.
+
+## FORMAT JAWABAN
+- Gunakan markdown yang rapi:
+  - bold untuk poin penting
+  - bullet list untuk daftar
+  - code block (tiga backtick) untuk SEMUA kode, wajib, biar tombol salin muncul di UI
+  - heading (## atau ###) kalau jawaban panjang
+- Jawaban ringkas untuk pertanyaan simpel
+- Jawaban terstruktur (heading + list) untuk pertanyaan kompleks
+
+## ATURAN UTAMA
+- Jawab berdasarkan konteks yang diberikan. Jangan mengarang fakta.
+- Kalau data tidak cukup atau kamu tidak tahu, katakan terus terang: "Maaf, saya belum punya info soal itu."
+- Kalau ada lampiran (file, gambar, voice note), gunakan isinya untuk menjawab.
+- Untuk file yang tidak bisa dibaca, jelaskan keterbatasannya dengan jujur.
+- Jangan pernah mengaku sebagai AI dari perusahaan lain.
+- Jangan pernah bilang kamu dibuat oleh OpenAI, Google, Anthropic, atau pihak lain selain Lanzz Project.
+- Kalau user minta hal yang melanggar hukum, berbahaya, atau tidak etis, tolak dengan sopan.
+- Kalau user tanya soal hari ini atau tanggal, gunakan info tanggal di bawah.
+
+## KONTEKS WAKTU
+Hari ini: ${tanggal}
+Jam sekarang: ${jam} WIB
+
+Ingat: kamu adalah Lanzz.Ai dari Lanzz Project. Bersikaplah seperti asisten AI pribadi yang ramah, cerdas, dan membantu.
 `;
+}
 
 function first(v) {
   return Array.isArray(v) ? v[0] : v;
@@ -47,20 +116,9 @@ function dataUrl(file) {
   return `data:${file.mimetype || 'application/octet-stream'};base64,${fileBuffer(file).toString('base64')}`;
 }
 
-/*
- * VN GRATIS:
- * Tidak lagi mewajibkan OPENAI_API_KEY.
- *
- * Kalau browser sudah mengubah VN menjadi teks dan mengirim
- * teks tersebut sebagai message, AI tetap bisa memahami VN.
- *
- * Kalau hanya file audio yang masuk tanpa transkrip browser,
- * server tidak akan error. Audio tetap diterima.
- */
 async function transcribe(file) {
   const key = process.env.OPENAI_API_KEY;
 
-  // Gratis/fallback: jangan error kalau API key tidak ada.
   if (!key) return '';
 
   try {
@@ -254,9 +312,6 @@ async function callChat({
     const type = file.mimetype || '';
     const name = file.originalFilename || 'file';
 
-    // =========================
-    // VOICE NOTE
-    // =========================
     if (type.startsWith('audio/')) {
       transcript = await transcribe(file);
 
@@ -269,8 +324,6 @@ async function callChat({
           `Voice note ${name} berhasil ditranskrip.`
         );
       } else {
-        // PENTING:
-        // Tidak throw error kalau OPENAI_API_KEY kosong.
         notes.push(
           `Voice note ${name} diterima. Transkripsi server tidak aktif pada mode gratis.`
         );
@@ -279,9 +332,6 @@ async function callChat({
       continue;
     }
 
-    // =========================
-    // IMAGE
-    // =========================
     if (type.startsWith('image/')) {
       if ((file.size || 0) <= 7 * 1024 * 1024) {
         content.push({
@@ -303,9 +353,6 @@ async function callChat({
       continue;
     }
 
-    // =========================
-    // OTHER FILES
-    // =========================
     const x = await extractFile(file);
 
     extracted.push(x);
@@ -385,7 +432,7 @@ async function callChat({
         messages: [
           {
             role: 'system',
-            content: SYSTEM_PROMPT
+            content: getSystemPrompt()
           },
 
           ...safeHistory,
@@ -448,7 +495,7 @@ async function imageEdit(file, prompt) {
 
   form.append(
     'model',
-    'gpt-image-2'
+    'gpt-image-1'
   );
 
   form.append(
@@ -557,9 +604,6 @@ module.exports = async function handler(
     const uploaded =
       filesArray(files);
 
-    // =========================
-    // AI IMAGE EDIT
-    // =========================
     if (action === 'image-edit') {
       const image =
         uploaded.find(f =>
@@ -591,9 +635,6 @@ module.exports = async function handler(
         .json(result);
     }
 
-    // =========================
-    // HISTORY
-    // =========================
     let history = [];
 
     try {
@@ -606,9 +647,6 @@ module.exports = async function handler(
       );
     } catch {}
 
-    // =========================
-    // CHAT
-    // =========================
     const result =
       await callChat({
         message: field(
