@@ -1121,9 +1121,13 @@ function renderMarkdown(text){
   html=html.replace(/`([^`\n]+)`/g,'<code class="md-inline">$1</code>');
   html=html.replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g,'<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
   html=html.replace(/(^|\s)(https?:\/\/[^\s<]+)/g,'$1<a href="$2" target="_blank" rel="noopener noreferrer">$2</a>');
+  // List: 1 level aja, flat, no nested (FIX)
   html=html.replace(/^[ \t]*[\-\*\+] (.+)$/gm,'<li>$1</li>');
-  html=html.replace(/(<li>[\s\S]*?<\/li>)(?!\s*<li>)/g,(m)=>m.replace(/<li>/g,'<ul><li>').replace(/<\/li>$/,'</li></ul>'));
+  html=html.replace(/(?:<li>[\s\S]*?<\/li>\n?)+/g,(m)=>'<ul>'+m.replace(/\n/g,'')+'</ul>\n');
   html=html.replace(/\n/g,'<br>');
+  // Bersihin <br> nyasar di sekitar list
+  html=html.replace(/<br>\s*(<\/ul>)/g,'$1');
+  html=html.replace(/(<ul>)\s*<br>/g,'$1');
   html=html.replace(/\u0000CB(\d+)\u0000/g,(m,i)=>{
     const b=codeBlocks[Number(i)];
     if(!b) return '';
@@ -1739,7 +1743,6 @@ async function runAI(text,files,replyCtx){
       messageToSend='(Membalas pesan sebelumnya: "'+String(replyCtx.content||'').slice(0,240)+'")\n\n'+messageToSend;
     }
     form.append('message',messageToSend);
-    // ✅ FIX UTAMA: Mapping role 'ai' menjadi 'assistant' agar history dibaca backend
     form.append('history', JSON.stringify(current.messages.slice(-20).map(m => ({
       role: m.role === 'ai' ? 'assistant' : 'user',
       content: m.content
