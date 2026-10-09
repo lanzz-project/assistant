@@ -361,6 +361,24 @@ textarea{display:block;width:100%;min-height:46px;max-height:150px;resize:none;b
 .ico-sm{width:14px;height:14px;display:block;flex:none}
 .ico-lg{width:22px;height:22px;display:block;flex:none}
 
+.confirm-modal{display:none;position:fixed;inset:0;background:rgba(2,4,10,.75);z-index:110;place-items:center;padding:20px;backdrop-filter:blur(6px);animation:fadeIn .18s ease}
+.confirm-modal.open{display:grid}
+.confirm-card{width:min(420px,100%);background:#0c1426;border:1px solid rgba(129,92,255,.3);border-radius:18px;padding:22px;box-shadow:0 30px 80px rgba(0,0,0,.55);animation:popIn .22s cubic-bezier(.2,.9,.3,1.2)}
+.confirm-icon{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;background:linear-gradient(135deg,rgba(129,92,255,.18),rgba(34,216,255,.14));color:#b9a8ff;margin-bottom:14px}
+.confirm-icon svg{width:24px;height:24px}
+.confirm-icon.warn{background:linear-gradient(135deg,rgba(129,92,255,.18),rgba(34,216,255,.14));color:#b9a8ff}
+.confirm-title{font-size:16px;font-weight:800;margin:0 0 8px;color:#f7f9ff;line-height:1.35}
+.confirm-desc{font-size:12.5px;color:#8e9bb5;margin:0 0 18px;line-height:1.6}
+.confirm-actions{display:flex;gap:8px;justify-content:flex-end}
+.confirm-btn{min-width:88px;padding:10px 16px;border-radius:11px;border:1px solid var(--line);background:rgba(255,255,255,.035);color:#cbd6e9;font-weight:700;font-size:12.5px;transition:.18s;cursor:pointer}
+.confirm-btn:hover{background:rgba(255,255,255,.08);color:#fff}
+.confirm-btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent2));border-color:transparent;color:#fff;box-shadow:0 5px 20px rgba(129,92,255,.25)}
+.confirm-btn.primary:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.confirm-btn.danger{background:linear-gradient(135deg,#ff4f6e,#ff7a4f);border-color:transparent;color:#fff;box-shadow:0 5px 20px rgba(255,79,110,.25)}
+.confirm-btn.danger:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.confirm-modal input{width:100%;padding:11px 13px;border-radius:11px;border:1px solid var(--line);background:#080f1e;color:#fff;outline:none;font-size:13px;margin-bottom:18px;transition:.18s}
+.confirm-modal input:focus{border-color:rgba(129,92,255,.55);box-shadow:0 0 0 3px rgba(129,92,255,.1)}
+
 @keyframes statusBlink{0%,100%{opacity:.38;transform:scale(.86);box-shadow:0 0 5px var(--yellow)}50%{opacity:1;transform:scale(1.08);box-shadow:0 0 15px var(--yellow)}}
 @keyframes float{50%{transform:translateY(-8px) rotate(1deg)}}
 @keyframes ring{to{transform:rotate(360deg);border-color:rgba(34,216,255,.18)}}
@@ -419,6 +437,7 @@ textarea{display:block;width:100%;min-height:46px;max-height:150px;resize:none;b
  .theme-grid{grid-template-columns:repeat(5,1fr)}
  .sidebar.mobile-open{position:fixed!important;top:0;left:0;width:78vw;max-width:320px;height:100dvh;z-index:1000!important;display:flex!important;box-shadow:20px 0 60px rgba(0,0,0,.5);background:#050811!important;opacity:1!important;filter:none!important}
  .sidebar-backdrop{z-index:999!important;backdrop-filter:none!important}
+ .confirm-card{padding:20px}
 }
 @media(max-width:390px){
  .hero h1{font-size:40px;letter-spacing:-2.2px}
@@ -775,6 +794,21 @@ body.no-particles #particleCanvas{display:none}
   </div>
 </div>
 
+<div class="confirm-modal" id="confirmModal">
+  <div class="confirm-card">
+    <div class="confirm-icon" id="confirmIcon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.7l2.3 6.9L21.2 12l-6.9 2.3L12 21.3l-2.3-7L2.8 12l6.9-2.3L12 2.7z"/><path d="M19 3v4M21 5h-4"/></svg>
+    </div>
+    <h3 class="confirm-title" id="confirmTitle">Konfirmasi</h3>
+    <p class="confirm-desc" id="confirmDesc"></p>
+    <input type="text" id="confirmInput" style="display:none" autocomplete="off">
+    <div class="confirm-actions">
+      <button type="button" class="confirm-btn" id="confirmCancel">Batal</button>
+      <button type="button" class="confirm-btn primary" id="confirmOk">OK</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -816,6 +850,66 @@ const $=s=>document.querySelector(s);
 const $$=s=>Array.from(document.querySelectorAll(s));
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
 const openSocial=url=>window.open(url,'_blank','noopener,noreferrer');
+
+/* ============ CUSTOM CONFIRM / PROMPT ============ */
+const SPARKLE_LOGO='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.7l2.3 6.9L21.2 12l-6.9 2.3L12 21.3l-2.3-7L2.8 12l6.9-2.3L12 2.7z"/><path d="M19 3v4M21 5h-4"/></svg>';
+let confirmResolve=null;
+function showConfirm(opts){
+  return new Promise(resolve=>{
+    const modal=$('#confirmModal');
+    const icon=$('#confirmIcon');
+    const title=$('#confirmTitle');
+    const desc=$('#confirmDesc');
+    const input=$('#confirmInput');
+    const okBtn=$('#confirmOk');
+    const cancelBtn=$('#confirmCancel');
+    const o=typeof opts==='string'?{message:opts}:opts;
+    confirmResolve=resolve;
+
+    if(o.title) title.textContent=o.title; else title.textContent='Konfirmasi';
+    desc.textContent=o.message||'';
+    icon.classList.toggle('warn',!!o.warn);
+    icon.innerHTML=SPARKLE_LOGO;
+
+    if(o.prompt){
+      input.style.display='block';
+      input.value=o.default||'';
+      input.placeholder=o.placeholder||'';
+    } else {
+      input.style.display='none';
+      input.value='';
+    }
+
+    okBtn.textContent=o.okText||'OK';
+    cancelBtn.textContent=o.cancelText||'Batal';
+    okBtn.classList.remove('primary','danger');
+    okBtn.classList.add(o.danger?'danger':'primary');
+
+    const finish=(val)=>{
+      modal.classList.remove('open');
+      confirmResolve=null;
+      okBtn.onclick=null;
+      cancelBtn.onclick=null;
+      input.onkeydown=null;
+      resolve(val);
+    };
+
+    okBtn.onclick=()=>{ finish(o.prompt?input.value.trim():true); };
+    cancelBtn.onclick=()=>{ finish(o.prompt?null:false); };
+    input.onkeydown=(e)=>{
+      if(e.key==='Enter'){ e.preventDefault(); okBtn.click(); }
+      if(e.key==='Escape'){ e.preventDefault(); cancelBtn.click(); }
+    };
+
+    modal.classList.add('open');
+    if(o.prompt){ setTimeout(()=>{input.focus();input.select();},50); }
+  });
+}
+function showPrompt(opts){
+  const o=typeof opts==='string'?{message:opts}:{...opts,prompt:true};
+  o.prompt=true;
+  return showConfirm(o);
+}
 
 /* ============ I18N ============ */
 const I18N={
@@ -1302,7 +1396,7 @@ function openChatMenu(ev,id){
       if(act==='pin'){ togglePin(id); toast(isPinned?'Sematan dilepas':'Percakapan disematkan'); return; }
       if(act==='rename'){
         const c=allChatsCache.find(x=>x.id===id); if(!c) return;
-        const name=window.prompt(t('prompt_rename'),c.title||'Chat Baru');
+        const name=await showPrompt({message:'Masukkan judul baru untuk percakapan ini.',title:'Ganti Judul',default:c.title||'Chat Baru',placeholder:'Judul percakapan...',okText:'Simpan'});
         if(name===null) return;
         const clean=name.trim().slice(0,80);
         if(!clean) return toast('Judul tidak boleh kosong');
@@ -1341,7 +1435,8 @@ function openChatMenu(ev,id){
         return;
       }
       if(act==='delete'){
-        if(!window.confirm(t('confirm_delete_chat'))) return;
+        const ok=await showConfirm({message:t('confirm_delete_chat'),title:'Hapus Percakapan',okText:'Hapus',danger:true});
+        if(!ok) return;
         await removeChat(id);
         if(current&&current.id===id){ current=null; clearMessages(); $('#hero').style.display='block'; $('#pinnedBar').innerHTML=''; }
         await renderList($('#search').value);
@@ -1585,7 +1680,7 @@ async function editMessage(msgId){
   const idx=current.messages.findIndex(m=>m.id===msgId);
   if(idx<0) return;
   const msg=current.messages[idx];
-  const next=window.prompt(t('prompt_edit'),msg.content||'');
+  const next=await showPrompt({message:'Edit pesan lalu kirim ulang.',title:'Edit Pesan',default:msg.content||'',placeholder:'Isi pesan...',okText:'Kirim Ulang'});
   if(next===null) return;
   const clean=next.trim();
   if(!clean) return toast('Pesan tidak boleh kosong');
@@ -1969,7 +2064,8 @@ function buildCommands(){
     {id:'export',label:'Export semua percakapan (JSON)',hint:'',icon:ICONS.download,run:async()=>{const r=await getAll();exportChats(r,'lanzz-ai-all-chats.json');}},
     {id:'import',label:'Import percakapan (JSON)',hint:'',icon:ICONS.download,run:()=>{const f=$('#importFile'); if(f)f.click();}},
     {id:'clear',label:'Hapus semua riwayat percakapan',hint:'',icon:ICONS.broom,run:async()=>{
-      if(!window.confirm(t('confirm_reset_db')))return;
+      const ok=await showConfirm({message:t('confirm_reset_db'),title:'Hapus Semua Riwayat',okText:'Hapus',danger:true});
+      if(!ok)return;
       await clearAll();
       current=null;
       $('#messages').innerHTML='';
@@ -2144,8 +2240,9 @@ function renderFolderListInModal(){
     const row=document.createElement('div');
     row.style.cssText='display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:11px;background:rgba(255,255,255,.03)';
     row.innerHTML='<span style="flex:1;font-size:12px;color:#e5ecf7">'+esc(f)+'</span><button type="button" style="width:28px;height:28px;border:0;background:transparent;color:#ff8da2;border-radius:8px;display:grid;place-items:center;cursor:pointer">'+ICONS.trash+'</button>';
-    row.querySelector('button').onclick=()=>{
-      if(!window.confirm('Hapus folder "'+f+'"? Chat di dalamnya tetap ada (jadi tanpa folder).')) return;
+    row.querySelector('button').onclick=async()=>{
+      const ok=await showConfirm({message:'Hapus folder "'+f+'"? Chat di dalamnya tetap ada.',title:'Hapus Folder',okText:'Hapus',danger:true});
+      if(!ok) return;
       removeFolder(f);
       renderFolderListInModal();
       renderList($('#search').value);
@@ -2384,7 +2481,8 @@ safeBind('#importFile','change',async e=>{
 safeBind('#reset','click',async()=>{
   setMobileMenu(false);
   try{
-    if(window.confirm&&!window.confirm(t('confirm_reset_db')))return;
+    const ok=await showConfirm({message:t('confirm_reset_db'),title:'Hapus Semua Riwayat',okText:'Hapus',danger:true});
+    if(!ok) return;
     await clearAll();
     current=null;
     $('#messages').innerHTML='';
@@ -2411,6 +2509,7 @@ document.addEventListener('keydown',e=>{
   if((e.ctrlKey||e.metaKey)&&e.shiftKey&&e.key.toLowerCase()==='o'){ e.preventDefault(); newChat(); return; }
   if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='f'&&!typing){ e.preventDefault(); openSearchInChat(); return; }
   if(e.key==='Escape'){
+    if($('#confirmModal')&&$('#confirmModal').classList.contains('open')){ $('#confirmCancel').click(); return; }
     if($('#cmdModal')&&$('#cmdModal').classList.contains('open')){closeCmd();return;}
     if($('#lightbox')&&$('#lightbox').classList.contains('open')){closeLightbox();return;}
     if($('#statsModal')&&$('#statsModal').classList.contains('open')){$('#statsModal').classList.remove('open');return;}
